@@ -5,7 +5,9 @@ metadata:
   namespace: argo-appservice-test
   annotations:
     argocd.argoproj.io/tracking-id: argo-appservice:batch/Job:argo-appservice-test/deploy-to-appservice
+    argocd.argoproj.io/hook: Sync
     argocd.argoproj.io/hook-delete-policy: HookSucceeded
+
 spec:
   template:
     metadata:
