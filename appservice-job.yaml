@@ -13,29 +13,29 @@ spec:
         - -c
         - |
           az login --service-principal \
-            --username b52c23ca-f0ed-4c59-9a40-f788a44c3b2d \
-            --password $AZURE_CLIENT_SECRET \
+            --username 1a649b3f-1eb8-40aa-8574-a7dfc1f1becb \
+            --password Mr48Q~63w5uzaG5X3MM6FmZasfR6MgmS.k-3zcHC \
             --tenant 7492deb3-56cf-4f2f-a137-debd02585176
 
           az webapp config container set \
-            --name myapp-service \
-            --resource-group my-rg \
-            --docker-custom-image-name myregistry.azurecr.io/myapp:latest \
-            --docker-registry-server-url https://myregistry.azurecr.io
-        env:
-        - name: AZURE_CLIENT_ID
-          valueFrom:
-            secretKeyRef:
-              name: azure-secret
-              key: clientId
-        - name: AZURE_CLIENT_SECRET
-          valueFrom:
-            secretKeyRef:
-              name: azure-secret
-              key: clientSecret
-        - name: AZURE_TENANT_ID
-          valueFrom:
-            secretKeyRef:
-              name: azure-secret
-              key: tenantId
+            --name argo-appservice-test \
+            --resource-group argo-appservice-test \
+            --docker-custom-image-name library/alpine:latest \
+            --docker-registry-server-url https://index.docker.io
+        # env:
+        # - name: AZURE_CLIENT_ID
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: azure-secret
+        #       key: clientId
+        # - name: AZURE_CLIENT_SECRET
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: azure-secret
+        #       key: clientSecret
+        # - name: AZURE_TENANT_ID
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: azure-secret
+        #       key: tenantId
       restartPolicy: Never
