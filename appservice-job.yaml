@@ -1,21 +1,20 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
+  generateName: deploy-to-appservice-
+  namespace: argo-appservice-test
   annotations:
     argocd.argoproj.io/tracking-id: argo-appservice:batch/Job:argo-appservice-test/deploy-to-appservice
-  name: deploy-to-appservice
-  namespace: argo-appservice-test
 spec:
-  selector:
-    matchLabels:
-      job-name: deploy-to-appservice
   template:
     metadata:
       labels:
-        job-name: deploy-to-appservice
+        app: deploy-to-appservice
     spec:
       containers:
-        - command:
+        - name: azure-cli
+          image: mcr.microsoft.com/azure-cli
+          command:
             - /bin/sh
             - '-c'
             - |
@@ -29,6 +28,4 @@ spec:
                 --resource-group argo-appservice-test \
                 --docker-custom-image-name busybox \
                 --docker-registry-server-url https://index.docker.io
-          image: mcr.microsoft.com/azure-cli
-          name: azure-cli
       restartPolicy: Never
