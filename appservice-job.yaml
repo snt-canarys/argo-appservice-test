@@ -6,7 +6,13 @@ metadata:
   name: deploy-to-appservice
   namespace: argo-appservice-test
 spec:
+  selector:
+    matchLabels:
+      job-name: deploy-to-appservice
   template:
+    metadata:
+      labels:
+        job-name: deploy-to-appservice
     spec:
       containers:
         - command:
