@@ -6,7 +6,6 @@ metadata:
   annotations:
     argocd.argoproj.io/tracking-id: argo-appservice:batch/Job:argo-appservice-test/deploy-to-appservice
     argocd.argoproj.io/hook: Sync
-    argocd.argoproj.io/sync-wave: "1"  # Run in specific sync wave
     argocd.argoproj.io/hook-delete-policy: HookSucceeded
 
 spec:
