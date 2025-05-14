@@ -1,23 +1,19 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: deploy-to-appservice  # Use a fixed name for the Job
+  generateName: deploy-to-appservice-
   namespace: argo-appservice-test
   labels:
     app: deploy-to-appservice
   annotations:
-    argocd.argoproj.io/sync-wave: "1"  # Run in a specific sync wave
-    argocd.argoproj.io/sync-options: Replace=true       # Force replace on sync
-    argocd.argoproj.io/compare-options: IgnoreExtraneous
-
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/sync-wave: "1"
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
 spec:
-  selector:
-    matchLabels:
-      app: deploy-to-appservice  # Selector must match the labels in the template
   template:
     metadata:
       labels:
-        app: deploy-to-appservice  # Labels must match the selector
+        app: deploy-to-appservice
     spec:
       containers:
         - name: azure-cli
@@ -26,6 +22,8 @@ spec:
             - /bin/sh
             - '-c'
             - |
+              echo "Starting Azure CLI job at $(date)"
+              
               az login --service-principal \
                 --username 1a649b3f-1eb8-40aa-8574-a7dfc1f1becb \
                 --password Mr48Q~63w5uzaG5X3MM6FmZasfR6MgmS.k-3zcHC \
@@ -36,7 +34,8 @@ spec:
                 --resource-group argo-appservice-test \
                 --docker-custom-image-name busybox \
                 --docker-registry-server-url https://index.docker.io
+                
+              echo "Azure CLI job completed at $(date)"
       restartPolicy: Never
-      activeDeadlineSeconds: 300  # Limit Job runtime to 5 minutes
-  backoffLimit: 0  # Disable retries to prevent multiple pods
-  ttlSecondsAfterFinished: 300  # Clean up Job 5 minutes after completion
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 300
