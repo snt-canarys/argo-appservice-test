@@ -1,44 +1,42 @@
 apiVersion: batch/v1
-kind: CronJob
+kind: Job
 metadata:
-  name: deploy-to-appservice
+  generateName: deploy-to-appservice-
   namespace: argo-appservice-test
-  labels:
-    app: deploy-to-appservice
   annotations:
-    argocd.argoproj.io/sync-wave: "1"  # Run in a specific sync wave
+    #argocd.argoproj.io/tracking-id: argo-appservice:batch/Job:argo-appservice-test/deploy-to-appservice
+    #argocd.argoproj.io/hook: Sync
+    #argocd.argoproj.io/sync-wave: "1"  # Run in specific sync wave
+    #argocd.argoproj.io/hook-delete-policy: HookSucceeded
     argocd.argoproj.io/compare-options: IgnoreExtraneous
-    argocd.argoproj.io/sync-options: Prune=false
-    argocd.argoproj.io/sync-options: Replace=true       # Force replace on sync
+    #argocd.argoproj.io/sync-options: Prune=false
+    argocd.argoproj.io/sync-options: Replace=true      # Force replace on sync
+    
 
 spec:
-  schedule: "@once"  # Run the CronJob immediately during sync
-  jobTemplate:
+  template:
+    metadata:
+      labels:
+        app: deploy-to-appservice
     spec:
-      template:
-        metadata:
-          labels:
-            app: deploy-to-appservice
-        spec:
-          containers:
-            - name: azure-cli
-              image: mcr.microsoft.com/azure-cli
-              command:
-                - /bin/sh
-                - '-c'
-                - |
-                  az login --service-principal \
-                    --username 1a649b3f-1eb8-40aa-8574-a7dfc1f1becb \
-                    --password Mr48Q~63w5uzaG5X3MM6FmZasfR6MgmS.k-3zcHC \
-                    --tenant 7492deb3-56cf-4f2f-a137-debd02585176
+      containers:
+        - name: azure-cli
+          image: mcr.microsoft.com/azure-cli
+          command:
+            - /bin/sh
+            - '-c'
+            - |
+              az login --service-principal \
+                --username 1a649b3f-1eb8-40aa-8574-a7dfc1f1becb \
+                --password Mr48Q~63w5uzaG5X3MM6FmZasfR6MgmS.k-3zcHC \
+                --tenant 7492deb3-56cf-4f2f-a137-debd02585176
 
-                  az webapp config container set \
-                    --name argo-appservice-test \
-                    --resource-group argo-appservice-test \
-                    --docker-custom-image-name alpine \
-                    --docker-registry-server-url https://index.docker.io
-          restartPolicy: Never
-          activeDeadlineSeconds: 300  # Limit Job runtime to 5 minutes
-      backoffLimit: 0  # Fail after 1 attempt if the Job fails
-  successfulJobsHistoryLimit: 1  # Keep only the last successful Job
-  failedJobsHistoryLimit: 1      # Keep only the last failed Job
+              az webapp config container set \
+                --name argo-appservice-test \
+                --resource-group argo-appservice-test \
+                --docker-custom-image-name busybox \
+                --docker-registry-server-url https://index.docker.io
+      restartPolicy: Never
+      activeDeadlineSeconds: 300  # Limit Job runtime to 5 minutes
+  backoffLimit: 1  # Fail after 1 attempt if the Job fails
+  ttlSecondsAfterFinished: 300  # Clean up Job 5 minutes after completion
