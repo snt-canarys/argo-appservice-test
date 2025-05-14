@@ -8,9 +8,6 @@ on:
 permissions:
   contents: write
 
-env:
-  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-  DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
 jobs:
   build-and-push:
@@ -21,7 +18,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Log in to Docker Hub
-        run: echo "${{ env.DOCKERHUB_TOKEN }}" | docker login -u "${{ env.DOCKERHUB_USERNAME }}" --password-stdin
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
       - name: Generate Unique Tag
         id: vars
@@ -32,16 +29,16 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t ${{ env.DOCKERHUB_USERNAME }}/alpine:${{ steps.vars.outputs.sha_tag }} .
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/alpine:${{ steps.vars.outputs.sha_tag }} .
 
       - name: Push Docker Image
         run: |
-          docker push ${{ env.DOCKERHUB_USERNAME }}/alpine:${{ steps.vars.outputs.sha_tag }}
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/alpine:${{ steps.vars.outputs.sha_tag }}
 
       - name: Update DOCKER_IMAGE_NAME in configmap
         run: |
           CONFIGMAP_FILE="./configmap.yaml"
-          NEW_TAG="${{ env.DOCKERHUB_USERNAME }}/alpine:${{ steps.vars.outputs.sha_tag }}"
+          NEW_TAG="${{ secrets.DOCKERHUB_USERNAME }}/alpine:${{ steps.vars.outputs.sha_tag }}"
 
           # Safely update the DOCKER_IMAGE_NAME in the ConfigMap
           sed -i "s|^\( *DOCKER_IMAGE_NAME:\).*|\1 ${NEW_TAG}|" $CONFIGMAP_FILE
