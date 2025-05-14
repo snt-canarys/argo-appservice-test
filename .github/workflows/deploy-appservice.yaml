@@ -1,4 +1,5 @@
-name: Build, Push Docker Image & Update ConfigMap
+name: argo-appservice-deploy
+run-name: ${{ github.sha }}
 
 on:
   push:
