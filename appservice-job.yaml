@@ -12,6 +12,8 @@ metadata:
     # argocd.argoproj.io/compare-options: IgnoreExtraneous
     # argocd.argoproj.io/sync-options: Prune=false
     # argocd.argoproj.io/sync-options: Replace=true     # Force replace on sync
+    argocd.argoproj.io/tracking-id: deploy-to-appservice  # Track the Job for idempotency
+
     argocd.argoproj.io/compare-options: IgnoreExtraneous
     argocd.argoproj.io/sync-options: Prune=false
     argocd.argoproj.io/sync-options: Replace=true  
