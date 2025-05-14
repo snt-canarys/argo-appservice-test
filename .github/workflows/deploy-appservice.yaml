@@ -26,8 +26,8 @@ jobs:
       - name: Generate Unique Tag
         id: vars
         run: |
-          TIMESTAMP=$(date +%Y%m%d%H%M%S)
-          echo "sha_tag=dev-${TIMESTAMP}" >> $GITHUB_OUTPUT
+          COMMIT_HASH=${{ github.sha }}
+          echo "sha_tag=dev-${COMMIT_HASH}" >> $GITHUB_OUTPUT
 
 
       - name: Build Docker Image
