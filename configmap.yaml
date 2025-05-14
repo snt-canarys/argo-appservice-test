@@ -6,5 +6,5 @@ metadata:
 data:
   WEBAPP_NAME: argo-appservice-test
   RESOURCE_GROUP: argo-appservice-test
-  DOCKER_IMAGE_NAME: tsailendranath/alpine:dev-82d7dbe176352603f4d599a0bbd18a0499ee828b
+  DOCKER_IMAGE_NAME: tsailendranath/alpine:dev-1cd898ad2ad75c4818b365cb21de61e7561a151f
   DOCKER_REGISTRY_URL: https://index.docker.io
