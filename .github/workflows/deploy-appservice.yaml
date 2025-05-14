@@ -31,24 +31,18 @@ jobs:
         run: |
           docker push ${{ env.DOCKERHUB_USERNAME }}/alpine:${{ steps.vars.outputs.sha_tag }}
 
-  # update-configmap:
-  #   needs: build-and-push
-  #   runs-on: ubuntu-latest
-  #   steps:
+      - name: Update DOCKER_IMAGE_NAME in configmap
+        run: |
+          CONFIGMAP_FILE="./configmap.yaml"
 
-  #     - name: Checkout code
-  #       uses: actions/checkout@v3
+          # Update the DOCKER_IMAGE_NAME value
+          sed -i "s|DOCKER_IMAGE_NAME:.*|DOCKER_IMAGE_NAME: tsailendranath/alpine:${{ steps.vars.outputs.tag }}|" $CONFIGMAP_FILE
 
-  #     - name: Setup kubectl
-  #       uses: azure/setup-kubectl@v3
+      - name: Commit & Push changes
+        run: |
+          git config --global user.email "sailendranath.thakur@ecanarys.com"
+          git config --global user.name "Sailendranath Thakur"
+          git commit -am "chore: update image tag to alpine:${{ steps.vars.outputs.tag }}"
+          git push
 
-  #     - name: Load Kubeconfig
-  #       run: |
-  #         mkdir -p $HOME/.kube
-  #         echo "${{ secrets.KUBE_CONFIG }}" > $HOME/.kube/config
-
-  #     - name: Update ConfigMap with new image tag
-  #       run: |
-  #         kubectl get configmap my-configmap -n my-namespace -o yaml > configmap.yaml
-  #         sed -i "s/IMAGE_TAG:.*/IMAGE_TAG: \"${{ needs.build-and-push.outputs.sha_tag }}\"/" configmap.yaml
-  #         kubectl apply -f configmap.yaml
+ 
