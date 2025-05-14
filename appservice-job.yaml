@@ -6,9 +6,9 @@ metadata:
   labels:
     app: deploy-to-appservice
   annotations:
-    argocd.argoproj.io/sync-wave: "1"  # Run in a specific sync wave
-    argocd.argoproj.io/compare-options: IgnoreExtraneous
-    argocd.argoproj.io/sync-options: Replace=true       # Force replace on sync
+    argocd.argoproj.io/hook: Sync  # Treat this Job as a sync hook
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded  # Delete the Job after it succeeds
+    argocd.argoproj.io/sync-wave: "1"       # Force replace on sync
 
 spec:
   template:
@@ -31,7 +31,7 @@ spec:
               az webapp config container set \
                 --name argo-appservice-test \
                 --resource-group argo-appservice-test \
-                --docker-custom-image-name alpine \
+                --docker-custom-image-name busybox \
                 --docker-registry-server-url https://index.docker.io
       restartPolicy: Never
       activeDeadlineSeconds: 300  # Limit Job runtime to 5 minutes
