@@ -39,8 +39,9 @@ jobs:
         run: |
           CONFIGMAP_FILE="./configmap.yaml"
           NEW_TAG="tsailendranath/alpine:${{ steps.vars.outputs.tag }}"
-          
-          sed -i -E "s|^(  DOCKER_IMAGE_NAME: ).*|\1${NEW_TAG}|" "$CONFIGMAP_FILE"
+
+          # Safely update only if tag is different
+          sed -i "s|^\( *DOCKER_IMAGE_NAME:\).*|\1 ${NEW_TAG}|" $CONFIGMAP_FILE
 
       - name: Debug - Show new line
         run: grep "DOCKER_IMAGE_NAME" ./configmap.yaml
