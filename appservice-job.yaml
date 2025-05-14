@@ -4,12 +4,12 @@ metadata:
   generateName: deploy-to-appservice-
   namespace: argo-appservice-test
   annotations:
-    argocd.argoproj.io/hook: PreSync  # Execute this Job before the sync process
+    argocd.argoproj.io/hook: Sync  # Execute this Job during the sync process
     argocd.argoproj.io/hook-delete-policy: HookSucceeded  # Delete the Job after it succeeds
     argocd.argoproj.io/sync-wave: "1"  # Run in a specific sync wave
     argocd.argoproj.io/compare-options: IgnoreExtraneous
     argocd.argoproj.io/sync-options: Prune=false
-    argocd.argoproj.io/sync-options: Replace=true      # Force replace on sync
+    argocd.argoproj.io/sync-options: Replace=true     # Force replace on sync
     
 
 spec:
