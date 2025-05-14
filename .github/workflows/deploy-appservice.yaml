@@ -3,7 +3,7 @@ name: Build, Push Docker Image & Update ConfigMap
 on:
   push:
     branches:
-      - main 
+      - main
 
 permissions:
   contents: write
@@ -23,9 +23,11 @@ jobs:
       - name: Log in to Docker Hub
         run: echo "${{ env.DOCKERHUB_TOKEN }}" | docker login -u "${{ env.DOCKERHUB_USERNAME }}" --password-stdin
 
-      - name: Set Commit SHA
+      - name: Generate Unique Tag
         id: vars
-        run: echo "sha_tag=dev-${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+        run: |
+          TIMESTAMP=$(date +%Y%m%d%H%M%S)
+          echo "sha_tag=dev-${TIMESTAMP}" >> $GITHUB_OUTPUT
 
       - name: Build Docker Image
         run: |
@@ -38,19 +40,23 @@ jobs:
       - name: Update DOCKER_IMAGE_NAME in configmap
         run: |
           CONFIGMAP_FILE="./configmap.yaml"
-          NEW_TAG="tsailendranath/alpine:${{ steps.vars.outputs.tag }}"
+          NEW_TAG="${{ env.DOCKERHUB_USERNAME }}/alpine:${{ steps.vars.outputs.sha_tag }}"
 
-          # Safely update only if tag is different
+          # Safely update the DOCKER_IMAGE_NAME in the ConfigMap
           sed -i "s|^\( *DOCKER_IMAGE_NAME:\).*|\1 ${NEW_TAG}|" $CONFIGMAP_FILE
 
-      - name: Debug - Show new line
-        run: grep "DOCKER_IMAGE_NAME" ./configmap.yaml
-      
-      # - name: Commit & Push changes
-      #   run: |
-      #     git config --global user.email "sailendranath.thakur@ecanarys.com"
-      #     git config --global user.name "Sailendranath Thakur"
-      #     git commit -am "chore: update image tag to alpine:${{ steps.vars.outputs.tag }}"
-      #     git push
+      - name: Debug - Show Updated ConfigMap
+        run: cat ./configmap.yaml
 
- 
+      - name: Commit & Push Changes If Necessary
+        run: |
+          git config --global user.email "sailendranath.thakur@ecanarys.com"
+          git config --global user.name "Sailendranath Thakur"
+
+          # Check if there are changes to commit
+          if ! git diff --quiet; then
+            git add ./configmap.yaml
+            git commit -m "[skip ci] chore: update image tag to alpine:${{ steps.vars.outputs.sha_tag }}"
+            git push
+          else
+            echo "No changes to commit."
