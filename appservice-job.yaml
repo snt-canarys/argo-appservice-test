@@ -4,12 +4,10 @@ metadata:
   name: deploy-to-appservice
   namespace: argo-appservice-test
   annotations:
-    argocd.argoproj.io/tracking-id: argo-appservice:batch/Job:argo-appservice-test/deploy-to-appservice
     argocd.argoproj.io/hook: Sync
     argocd.argoproj.io/sync-wave: "1"
-    argocd.argoproj.io/hook-delete-policy: HookSucceeded
-    argocd.argoproj.io/compare-options: IgnoreExtraneous
-    argocd.argoproj.io/sync-options: Prune=false,Replace=true
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+    argocd.argoproj.io/sync-options: Replace=true
     
 spec:
   template:
@@ -31,7 +29,7 @@ spec:
               az webapp config container set \
                 --name argo-appservice-test \
                 --resource-group argo-appservice-test \
-                --docker-custom-image-name busybox \
+                --docker-custom-image-name alpine \
                 --docker-registry-server-url https://index.docker.io
       restartPolicy: Never
       activeDeadlineSeconds: 300
