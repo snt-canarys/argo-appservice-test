@@ -1,37 +1,31 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: deploy-to-appservice
+  name: azure-cli-job
   namespace: argo-appservice-test
   annotations:
-    argocd.argoproj.io/hook: Sync
-    argocd.argoproj.io/sync-wave: "1"
-    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
-    argocd.argoproj.io/sync-options: Replace=true
-    
+    argocd.argoproj.io/hook: SyncFail
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
 spec:
   template:
-    metadata:
-      labels:
-        app: deploy-to-appservice
     spec:
       containers:
-        - name: azure-cli
-          image: mcr.microsoft.com/azure-cli
-          command:
-            - /bin/sh
-            - '-c'
-            - |
-              az login --service-principal \
-                --username 1a649b3f-1eb8-40aa-8574-a7dfc1f1becb \
-                --password Mr48Q~63w5uzaG5X3MM6FmZasfR6MgmS.k-3zcHC \
-                --tenant 7492deb3-56cf-4f2f-a137-debd02585176
-              az webapp config container set \
-                --name argo-appservice-test \
-                --resource-group argo-appservice-test \
-                --docker-custom-image-name alpine \
-                --docker-registry-server-url https://index.docker.io
+      - name: azure-cli
+        image: mcr.microsoft.com/azure-cli
+        command:
+        - bash
+        - -c
+        - |
+          echo "Running Azure CLI commands"
+          az login --service-principal \
+            --username 1a649b3f-1eb8-40aa-8574-a7dfc1f1becb \
+            --password Mr48Q~63w5uzaG5X3MM6FmZasfR6MgmS.k-3zcHC \
+            --tenant 7492deb3-56cf-4f2f-a137-debd02585176
+          az webapp config container set \
+            --name argo-appservice-test \
+            --resource-group argo-appservice-test \
+            --docker-custom-image-name alpine \
+            --docker-registry-server-url https://index.docker.io
+          echo "Commands completed"
       restartPolicy: Never
-      activeDeadlineSeconds: 300
-  backoffLimit: 1
-  ttlSecondsAfterFinished: 300
+  backoffLimit: 0
