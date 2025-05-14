@@ -1,20 +1,23 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: deploy-to-appservice  # Use a fixed name instead of generateName
+  name: deploy-to-appservice  # Use a fixed name for the Job
   namespace: argo-appservice-test
   labels:
     app: deploy-to-appservice
   annotations:
     argocd.argoproj.io/hook: Sync  # Treat this Job as a sync hook
     argocd.argoproj.io/hook-delete-policy: HookSucceeded  # Delete the Job after it succeeds
-    argocd.argoproj.io/sync-wave: "1"       # Force replace on sync
+    argocd.argoproj.io/sync-wave: "1"  # Run in a specific sync wave
 
 spec:
+  selector:
+    matchLabels:
+      app: deploy-to-appservice  # Selector must match the labels in the template
   template:
     metadata:
       labels:
-        app: deploy-to-appservice
+        app: deploy-to-appservice  # Labels must match the selector
     spec:
       containers:
         - name: azure-cli
