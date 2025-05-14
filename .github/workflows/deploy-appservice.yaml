@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - main 
+
+permissions:
+  contents: write
+
 env:
   DOCKERHUB_USERNAME: tsailendranath
   DOCKERHUB_TOKEN: Sn@7325912909
