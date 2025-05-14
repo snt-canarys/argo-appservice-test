@@ -33,7 +33,7 @@ spec:
               az webapp config container set \
                 --name argo-appservice-test \
                 --resource-group argo-appservice-test \
-                --docker-custom-image-name busybox \
+                --docker-custom-image-name alpine \
                 --docker-registry-server-url https://index.docker.io
       restartPolicy: Never
       activeDeadlineSeconds: 300  # Limit Job runtime to 5 minutes
