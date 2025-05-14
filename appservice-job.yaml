@@ -1,5 +1,6 @@
 apiVersion: batch/v1
 kind: Job
+
 metadata:
   generateName: deploy-to-appservice-
   namespace: argo-appservice-test
@@ -9,6 +10,7 @@ metadata:
     argocd.argoproj.io/hook: Sync
     argocd.argoproj.io/sync-wave: "1"
     argocd.argoproj.io/hook-delete-policy: HookSucceeded
+
 spec:
   template:
     metadata:
@@ -19,7 +21,7 @@ spec:
         - name: azure-cli
           image: mcr.microsoft.com/azure-cli
           env:
-            # Environment variables from Secret
+            # Creds from Secret
             - name: AZURE_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -35,7 +37,7 @@ spec:
                 secretKeyRef:
                   name: appservice-secret
                   key: AZURE_TENANT
-            # Environment variables from ConfigMap
+            # app-service configs from ConfigMap
             - name: WEBAPP_NAME
               valueFrom:
                 configMapKeyRef:
@@ -74,6 +76,8 @@ spec:
                 --docker-registry-server-url $DOCKER_REGISTRY_URL
                 
               echo "Azure CLI job completed at $(date)"
+
       restartPolicy: Never
+
   backoffLimit: 0
   ttlSecondsAfterFinished: 300
