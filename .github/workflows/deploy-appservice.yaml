@@ -9,8 +9,8 @@ permissions:
   contents: write
 
 env:
-  DOCKERHUB_USERNAME: tsailendranath
-  DOCKERHUB_TOKEN: Sn@7325912909
+  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+  DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
 jobs:
   build-and-push:
