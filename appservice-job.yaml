@@ -18,6 +18,44 @@ spec:
       containers:
         - name: azure-cli
           image: mcr.microsoft.com/azure-cli
+          env:
+            # Environment variables from Secret
+            - name: AZURE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: appservice-secret
+                  key: AZURE_USERNAME
+            - name: AZURE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: appservice-secret
+                  key: AZURE_PASSWORD
+            - name: AZURE_TENANT
+              valueFrom:
+                secretKeyRef:
+                  name: appservice-secret
+                  key: AZURE_TENANT
+            # Environment variables from ConfigMap
+            - name: WEBAPP_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: appservice-config
+                  key: WEBAPP_NAME
+            - name: RESOURCE_GROUP
+              valueFrom:
+                configMapKeyRef:
+                  name: appservice-config
+                  key: RESOURCE_GROUP
+            - name: DOCKER_IMAGE_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: appservice-config
+                  key: DOCKER_IMAGE_NAME
+            - name: DOCKER_REGISTRY_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: appservice-config
+                  key: DOCKER_REGISTRY_URL
           command:
             - /bin/sh
             - '-c'
@@ -25,15 +63,15 @@ spec:
               echo "Starting Azure CLI job at $(date)"
               
               az login --service-principal \
-                --username 1a649b3f-1eb8-40aa-8574-a7dfc1f1becb \
-                --password Mr48Q~63w5uzaG5X3MM6FmZasfR6MgmS.k-3zcHC \
-                --tenant 7492deb3-56cf-4f2f-a137-debd02585176
+                --username $AZURE_USERNAME \
+                --password $AZURE_PASSWORD \
+                --tenant $AZURE_TENANT
 
               az webapp config container set \
-                --name argo-appservice-test \
-                --resource-group argo-appservice-test \
-                --docker-custom-image-name busybox \
-                --docker-registry-server-url https://index.docker.io
+                --name $WEBAPP_NAME \
+                --resource-group $RESOURCE_GROUP \
+                --docker-custom-image-name $DOCKER_IMAGE_NAME \
+                --docker-registry-server-url $DOCKER_REGISTRY_URL
                 
               echo "Azure CLI job completed at $(date)"
       restartPolicy: Never

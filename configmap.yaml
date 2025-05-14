@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: appservice-config
+  namespace: argo-appservice-test
+data:
+  WEBAPP_NAME: argo-appservice-test
+  RESOURCE_GROUP: argo-appservice-test
+  DOCKER_IMAGE_NAME: busybox
+  DOCKER_REGISTRY_URL: https://index.docker.io
