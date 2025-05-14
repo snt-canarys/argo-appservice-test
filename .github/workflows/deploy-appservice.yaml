@@ -41,12 +41,15 @@ jobs:
           NEW_TAG="tsailendranath/alpine:${{ steps.vars.outputs.tag }}"
           
           sed -i -E "s|^(  DOCKER_IMAGE_NAME: ).*|\1${NEW_TAG}|" "$CONFIGMAP_FILE"
+
+      - name: Debug - Show new line
+        run: grep "DOCKER_IMAGE_NAME" ./configmap.yaml
       
-      - name: Commit & Push changes
-        run: |
-          git config --global user.email "sailendranath.thakur@ecanarys.com"
-          git config --global user.name "Sailendranath Thakur"
-          git commit -am "chore: update image tag to alpine:${{ steps.vars.outputs.tag }}"
-          git push
+      # - name: Commit & Push changes
+      #   run: |
+      #     git config --global user.email "sailendranath.thakur@ecanarys.com"
+      #     git config --global user.name "Sailendranath Thakur"
+      #     git commit -am "chore: update image tag to alpine:${{ steps.vars.outputs.tag }}"
+      #     git push
 
  
