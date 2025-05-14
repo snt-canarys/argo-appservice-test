@@ -1,17 +1,14 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  generateName: deploy-to-appservice-
+  name: deploy-to-appservice  # Use a fixed name instead of generateName
   namespace: argo-appservice-test
+  labels:
+    app: deploy-to-appservice
   annotations:
-    #argocd.argoproj.io/tracking-id: argo-appservice:batch/Job:argo-appservice-test/deploy-to-appservice
-    #argocd.argoproj.io/hook: Sync
-    argocd.argoproj.io/sync-wave: "1"  # Run in specific sync wave
-    #argocd.argoproj.io/hook-delete-policy: HookSucceeded
+    argocd.argoproj.io/sync-wave: "1"  # Run in a specific sync wave
     argocd.argoproj.io/compare-options: IgnoreExtraneous
-    #argocd.argoproj.io/sync-options: Prune=false
-    argocd.argoproj.io/sync-options: Replace=true      # Force replace on sync
-    
+    argocd.argoproj.io/sync-options: Replace=true       # Force replace on sync
 
 spec:
   template:
@@ -38,5 +35,5 @@ spec:
                 --docker-registry-server-url https://index.docker.io
       restartPolicy: Never
       activeDeadlineSeconds: 300  # Limit Job runtime to 5 minutes
-  backoffLimit: 1  # Fail after 1 attempt if the Job fails
+  backoffLimit: 0  # Disable retries to prevent multiple pods
   ttlSecondsAfterFinished: 300  # Clean up Job 5 minutes after completion
